@@ -6,6 +6,8 @@
 	import { LoaderCircle, Send } from 'lucide-svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
+	import { scale } from 'svelte/transition';
 
 	const { data } = $props();
 
@@ -34,6 +36,7 @@
 				case 200:
 					chatChamber.push(botReply);
 					sendChatLoader = false;
+					textField = '';
 					break;
 
 				case 400:
@@ -51,15 +54,24 @@
 	onMount(() => {
 		chatChamber.push(data.messages);
 	});
+
+	function handleSubmit() {
+		chatChamber.push({
+			sender: 'Mike',
+			text: textField
+		});
+	}
 </script>
 
 <div class="mx-auto p-[1rem] md:max-w-[800px]">
 	<div class="flex min-h-screen flex-col gap-[5px]">
-		{#each chatChamber as chamber}
+		{#each chatChamber as chamber (chamber)}
 			<div
 				class={chamber.sender !== 'Mike Torotot Omega Robot'
 					? 'flex flex-row-reverse p-2'
 					: 'flex p-2'}
+				animate:flip={{ duration: 700 }}
+				transition:scale
 			>
 				<div class="grid gap-[10px]">
 					<div
@@ -81,7 +93,13 @@
 			</div>
 		{/each}
 	</div>
-	<form method="post" action="?/sendChat" use:enhance={sendChat} class="sticky bottom-5">
+	<form
+		onsubmit={handleSubmit}
+		method="post"
+		action="?/sendChat"
+		use:enhance={sendChat}
+		class="sticky bottom-5 mt-[5dvh]"
+	>
 		<div class="flex items-center gap-[10px]">
 			<Textarea
 				class="border-slate-700"
@@ -90,18 +108,7 @@
 				placeholder="Say something..."
 				bind:value={textField}
 			/>
-			<Button
-				disabled={sendChatLoader}
-				type="submit"
-				onclick={() => {
-					chatChamber.push({
-						sender: 'Mike',
-						text: textField
-					});
-
-					textField = '';
-				}}
-			>
+			<Button disabled={sendChatLoader || textField.length < 1} type="submit">
 				{#if sendChatLoader}
 					<LoaderCircle class="animate-spin" />
 				{:else}
