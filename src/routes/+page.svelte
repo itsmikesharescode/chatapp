@@ -60,7 +60,7 @@
 	}
 </script>
 
-<div class="mx-auto p-[1rem] md:max-w-[800px]">
+<div class="mx-auto p-[1rem] pt-[5dvh] md:max-w-[800px]">
 	<div class="flex min-h-screen flex-col gap-[5px]">
 		{#each chatChamber as chamber (chamber)}
 			<div
@@ -87,11 +87,11 @@
 					</div>
 
 					<div
-						class=" max-w-fit rounded-lg border-[1px] {chamber.sender !== 'Mike Torotot Omega Robot'
-							? 'bg-secondary'
+						class=" max-w-fit {chamber.sender !== 'Mike Torotot Omega Robot'
+							? 'rounded-lg border-[1px] bg-secondary'
 							: 'bg-outline'} p-[10px]"
 					>
-						<pre style="white-space: pre-wrap;">{chamber.text}</pre>
+						<pre class="whitespace-pre-wrap text-sm">{chamber.text}</pre>
 					</div>
 				</div>
 			</div>
