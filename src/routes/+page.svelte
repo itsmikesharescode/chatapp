@@ -8,13 +8,9 @@
 	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import { scale } from 'svelte/transition';
+	import type { ChatChamber } from '$lib/types.js';
 
 	const { data } = $props();
-
-	interface ChatChamber {
-		sender: string;
-		text: string;
-	}
 
 	let chatChamber: ChatChamber[] = $state([]);
 	let textField = $state('');
@@ -29,7 +25,7 @@
 			} = result as {
 				status: number;
 				type: string;
-				data: { botReply: { sender: string; text: string } };
+				data: { botReply: ChatChamber };
 			};
 
 			switch (status) {
@@ -58,7 +54,8 @@
 	function handleSubmit() {
 		chatChamber.push({
 			sender: 'Mike',
-			text: textField
+			text: textField,
+			date: new Date().toLocaleTimeString()
 		});
 	}
 </script>
@@ -83,11 +80,18 @@
 							<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
 							<Avatar.Fallback>CN</Avatar.Fallback>
 						</Avatar.Root>
-						<p>{chamber.sender}</p>
+						<div class="">
+							<p class="font-semibold">{chamber.sender}</p>
+							<p class="text-sm text-muted-foreground">{chamber.date}</p>
+						</div>
 					</div>
 
-					<div class=" max-w-fit rounded-lg border-[1px] bg-secondary p-[10px]">
-						<p>{chamber.text}</p>
+					<div
+						class=" max-w-fit rounded-lg border-[1px] {chamber.sender !== 'Mike Torotot Omega Robot'
+							? 'bg-secondary'
+							: 'bg-outline'} p-[10px]"
+					>
+						<pre style="white-space: pre-wrap;">{chamber.text}</pre>
 					</div>
 				</div>
 			</div>
@@ -101,10 +105,10 @@
 		class="sticky bottom-5 mt-[5dvh]"
 	>
 		<div class="flex items-center gap-[10px]">
+			<input name="textField" type="hidden" value={JSON.stringify(chatChamber)} />
 			<Textarea
 				class="border-slate-700"
 				disabled={sendChatLoader}
-				name="textField"
 				placeholder="Say something..."
 				bind:value={textField}
 			/>
